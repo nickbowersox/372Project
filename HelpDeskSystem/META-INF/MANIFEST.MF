@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: HelpDeskSystem
+Bundle-SymbolicName: HelpDeskSystem
+Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: HelpDeskSystem.jar,
+ sqljdbc42.jar
+Export-Package: .,
+ com.microsoft.sqlserver.jdbc,
+ microsoft.sql
