@@ -7,7 +7,6 @@ public class Main
 		Queries	queries = new Queries();
 		Connections conn = new Connections();
 		gui.createTicketScreen(queries, conn);
-		//test comment
 		
 	}//end main
 }//end Main
