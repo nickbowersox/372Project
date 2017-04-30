@@ -227,11 +227,11 @@ public class GUI
 		 JScrollPane reportScroll = new JScrollPane(reportTextArea);
 		 
 		 //create buttons
-		 JButton report1Button = new JButton("Report 1");
-		 JButton report2Button = new JButton("Report 2");
-		 JButton report3Button = new JButton("Report 3");
-		 JButton report4Button = new JButton("Report 4");
-		 JButton report5Button = new JButton("Report 5");
+		 JButton report1Button = new JButton("All Tickets");
+		 JButton report2Button = new JButton("Open Tickets");
+		 JButton report3Button = new JButton("Resolved Tickets");
+		 JButton report4Button = new JButton("Resolved By Employee");
+		 JButton report5Button = new JButton("Resolved By Team");
 		 JButton resetButton = new JButton("Clear");
 		 
 		 //add to frame
@@ -336,7 +336,7 @@ public class GUI
 	    	
 	    	public void actionPerformed(ActionEvent event)
 	    	{
-	    		reset(reportTextArea);
+	    		reset(reportTextArea, reportText);
 	    	}
 	    	
 	    }
@@ -346,9 +346,10 @@ public class GUI
 			
 	 }//end createReportScreen
 	
-	private void reset(JTextArea reportTextArea) 
+	private void reset(JTextArea reportTextArea, JTextField reportText) 
 	{
-		System.out.println("Clear worked");
+		reportTextArea.setText("");
+		reportText.setText("");
 	}
 	
 	public static void clear(JTextField idText, JTextField customerText, JTextField summaryText, JTextField resolveTimeText, 

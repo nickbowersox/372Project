@@ -499,27 +499,261 @@ Add to this query to also update:
 
 	public void report1(Connection conn, JTextField reportText, JTextArea reportTextArea)
 	{
-		System.out.println("Reprt 1 worked");
+		try
+		{
+			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
+			String user = "StudentS1";
+			String pass = "SuperSecurePassword17";
+
+			Statement stmt = null;
+			ResultSet rs = null;
+
+			conn = DriverManager.getConnection(connectionUrl, user, pass);
+
+			// sql code to retrieve data from database
+			String SQL = "select * from AdventureWorksS1.HelpDesk.Ticket "
+					+ "JOIN AdventureWorksS1.HelpDesk.Customers on AdventureWorksS1.HelpDesk.Ticket.CustomerID = AdventureWorksS1.HelpDesk.Customers.CustomerID";
+
+			// create the query and execute it
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(SQL);
+			String ticketIds = "";
+			String description = "";
+			String resolved = "";
+			String displayData = "";
+			
+			// set the GUI fields based on the fields returned from query
+			while (rs.next())
+			{
+				ticketIds = rs.getString("TicketID");
+				description = rs.getString("Description");
+				if(rs.getString("Resolved").equals("1"))
+				{
+					resolved = "Resolved";
+				}
+				else
+				{
+					resolved = "Open";
+				}
+				displayData += "Ticket ID: " + ticketIds + "\nDescription: " + description + "\nStatus: " + resolved + "\n\n";
+			}
+			reportTextArea.setText(displayData);
+			reportText.setText("All Tickets");
+			// close the result set
+			rs.close();
+		}
+		// if not able to execute query, print stack trace
+		catch (Exception e)
+		{
+
+			e.printStackTrace();
+		}
 	}// end report1
 
 	public void report2(Connection conn, JTextField reportText, JTextArea reportTextArea)
 	{
-		System.out.println("Reprt 2 worked");
+		try
+		{
+			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
+			String user = "StudentS1";
+			String pass = "SuperSecurePassword17";
+
+			Statement stmt = null;
+			ResultSet rs = null;
+
+			conn = DriverManager.getConnection(connectionUrl, user, pass);
+
+			// sql code to retrieve data from database
+			String SQL = "select TicketID, Description, Resolved from AdventureWorksS1.HelpDesk.Ticket "
+					+ "JOIN AdventureWorksS1.HelpDesk.Customers on AdventureWorksS1.HelpDesk.Ticket.CustomerID = AdventureWorksS1.HelpDesk.Customers.CustomerID "
+					+ "WHERE AdventureWorksS1.HelpDesk.Ticket.Resolved = '0'";
+
+			// create the query and execute it
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(SQL);
+			String ticketIds = "";
+			String description = "";
+			String resolved = "";
+			String displayData = "";
+			
+			// set the GUI fields based on the fields returned from query
+			while (rs.next())
+			{
+				ticketIds = rs.getString("TicketID");
+				description = rs.getString("Description");
+				if(rs.getString("Resolved").equals("1"))
+				{
+					resolved = "Resolved";
+				}
+				else
+				{
+					resolved = "Open";
+				}
+				displayData += "Ticket ID: " + ticketIds + "\nDescription: " + description + "\nStatus: " + resolved + "\n\n";
+			}
+			reportTextArea.setText(displayData);
+			reportText.setText("Open Tickets");
+			// close the result set
+			rs.close();
+		}
+		// if not able to execute query, print stack trace
+		catch (Exception e)
+		{
+
+			e.printStackTrace();
+		}
 	}// end report2
 
 	public void report3(Connection conn, JTextField reportText, JTextArea reportTextArea)
 	{
-		System.out.println("Reprt 3 worked");
+		try
+		{
+			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
+			String user = "StudentS1";
+			String pass = "SuperSecurePassword17";
+
+			Statement stmt = null;
+			ResultSet rs = null;
+
+			conn = DriverManager.getConnection(connectionUrl, user, pass);
+
+			// sql code to retrieve data from database
+			String SQL = "select TicketID, Description, Resolved from AdventureWorksS1.HelpDesk.Ticket "
+					+ "JOIN AdventureWorksS1.HelpDesk.Customers on AdventureWorksS1.HelpDesk.Ticket.CustomerID = AdventureWorksS1.HelpDesk.Customers.CustomerID "
+					+ "WHERE AdventureWorksS1.HelpDesk.Ticket.Resolved = '1'";
+
+			// create the query and execute it
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(SQL);
+			String ticketIds = "";
+			String description = "";
+			String resolved = "";
+			String displayData = "";
+			
+			// set the GUI fields based on the fields returned from query
+			while (rs.next())
+			{
+				ticketIds = rs.getString("TicketID");
+				description = rs.getString("Description");
+				if(rs.getString("Resolved").equals("1"))
+				{
+					resolved = "Resolved";
+				}
+				else
+				{
+					resolved = "Open";
+				}
+				displayData += "Ticket ID: " + ticketIds + "\nDescription: " + description + "\nStatus: " + resolved + "\n\n";
+			}
+			reportTextArea.setText(displayData);
+			reportText.setText("Resolved Tickets");
+			// close the result set
+			rs.close();
+		}
+		// if not able to execute query, print stack trace
+		catch (Exception e)
+		{
+
+			e.printStackTrace();
+		}
 	}// end report3
 
 	public void report4(Connection conn, JTextField reportText, JTextArea reportTextArea)
 	{
-		System.out.println("Reprt 4 worked");
+		try
+		{
+			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
+			String user = "StudentS1";
+			String pass = "SuperSecurePassword17";
+
+			Statement stmt = null;
+			ResultSet rs = null;
+
+			conn = DriverManager.getConnection(connectionUrl, user, pass);
+
+			// sql code to retrieve data from database
+			String SQL = "select Count(SupportID) as Support, Support.FirstName as FirstName, Support.LastName as LastName, Support.SupportTeam as Team from AdventureWorksS1.HelpDesk.Ticket "
+					+ "JOIN AdventureWorksS1.HelpDesk.Customers on AdventureWorksS1.HelpDesk.Ticket.CustomerID = AdventureWorksS1.HelpDesk.Customers.CustomerID "
+					+ "JOIN AdventureWorksS1.HelpDesk.Support on AdventureWorksS1.HelpDesk.Ticket.ResolvedBy =  AdventureWorksS1.HelpDesk.Support.SupportID "
+					+ "WHERE AdventureWorksS1.HelpDesk.Ticket.Resolved = '1' "
+					+ "GROUP BY Support.FirstName, Support.LastName, Support.SupportTeam";
+					
+			// create the query and execute it
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(SQL);
+			String count = "";
+			String firstName = "";
+			String lastName = "";
+			String team = "";
+			String displayData = "";
+			
+			// set the GUI fields based on the fields returned from query
+			while (rs.next())
+			{
+				count = rs.getString("Support");
+				firstName = rs.getString("FirstName");
+				lastName = rs.getString("LastName");
+				team = rs.getString("Team");
+				displayData += "Employee: " + firstName + " " + lastName + "\nTeam: " + team + "\nNumber of Tickets Resolved: " + count + "\n\n";
+			}
+			reportTextArea.setText(displayData);
+			reportText.setText("Resolved by Employee");
+			// close the result set
+			rs.close();
+		}
+		// if not able to execute query, print stack trace
+		catch (Exception e)
+		{
+
+			e.printStackTrace();
+		}
 	}// end report4
 
 	public void report5(Connection conn, JTextField reportText, JTextArea reportTextArea)
 	{
-		System.out.println("Reprt 5 worked");
+		try
+		{
+			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
+			String user = "StudentS1";
+			String pass = "SuperSecurePassword17";
+
+			Statement stmt = null;
+			ResultSet rs = null;
+
+			conn = DriverManager.getConnection(connectionUrl, user, pass);
+
+			// sql code to retrieve data from database
+			String SQL = "select Count(SupportID) as Support, Support.SupportTeam as Team from AdventureWorksS1.HelpDesk.Ticket "
+					+ "JOIN AdventureWorksS1.HelpDesk.Customers on AdventureWorksS1.HelpDesk.Ticket.CustomerID = AdventureWorksS1.HelpDesk.Customers.CustomerID "
+					+ "JOIN AdventureWorksS1.HelpDesk.Support on AdventureWorksS1.HelpDesk.Ticket.ResolvedBy =  AdventureWorksS1.HelpDesk.Support.SupportID "
+					+ "WHERE AdventureWorksS1.HelpDesk.Ticket.Resolved = '1' "
+					+ "GROUP BY Support.SupportTeam";
+					
+			// create the query and execute it
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(SQL);
+			String count = "";
+			String team = "";
+			String displayData = "";
+			
+			// set the GUI fields based on the fields returned from query
+			while (rs.next())
+			{
+				count = rs.getString("Support");
+				team = rs.getString("Team");
+				displayData += "Team: " + team + "\nNumber of Tickets Resolved: " + count + "\n\n";
+			}
+			reportTextArea.setText(displayData);
+			reportText.setText("Resolved by Team");
+			// close the result set
+			rs.close();
+		}
+		// if not able to execute query, print stack trace
+		catch (Exception e)
+		{
+
+			e.printStackTrace();
+		}
 	}// end report5
 
 }// end Queries
