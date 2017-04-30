@@ -51,6 +51,7 @@ public class GUI
 		JTextField customerText = new JTextField(15);
 		JTextField summaryText = new JTextField(25);
 		JTextField resolveTimeText = new JTextField(10);
+			resolveTimeText.setEditable(false);
 		JTextField minutesSpentText = new JTextField(5);
 		JTextField resolvedByText = new JTextField(15);
 		JTextField priorityText = new JTextField(1);
@@ -65,7 +66,8 @@ public class GUI
 		
 		//create check box
 		JCheckBox resolvedCheck = new JCheckBox();
-
+			resolvedCheck.setEnabled(false);
+			
 		//create panel to add JItems to
 		JPanel panel = new JPanel();
 		
@@ -121,7 +123,7 @@ public class GUI
     	public void actionPerformed(ActionEvent event)
     	   {
     			queries.search(conn.getConnections(), idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
-    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea);
+    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
     			conn.closeConnection();
     	   }
     }
@@ -136,7 +138,7 @@ public class GUI
     	public void actionPerformed(ActionEvent event)
     	   {
     			queries.update(conn.getConnections(), idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
-    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea);
+    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
     			conn.closeConnection();
     	   }
     }
@@ -151,7 +153,7 @@ public class GUI
     	public void actionPerformed(ActionEvent event)
     	   {
     			queries.resolve(conn.getConnections(), idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
-    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea);
+    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
     			conn.closeConnection();
     	   }
     }
@@ -166,7 +168,7 @@ public class GUI
     	public void actionPerformed(ActionEvent event)
     	   {
     			queries.create(conn.getConnections(), idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
-    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea);
+    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
     			conn.closeConnection();
     	   }
     }
@@ -180,6 +182,7 @@ public class GUI
 	    	
 	  	public void actionPerformed(ActionEvent event)
 	  	{
+	  			idText.setEditable(true);
 	  			clear(idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
     					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea);
 	  	}

@@ -7,6 +7,5 @@ public class Main
 		Queries	queries = new Queries();
 		Connections conn = new Connections();
 		gui.createTicketScreen(queries, conn);
-		//testing push access
 	}//end main
 }//end Main

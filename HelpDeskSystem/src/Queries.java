@@ -3,8 +3,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -19,11 +23,27 @@ public class Queries
 	public void search(Connection conn, JTextField idText, JTextField customerText, JTextField summaryText,
 			JTextField resolveTimeText, JTextField minutesSpentText, JTextField resolvedByText, JTextField priorityText,
 			JCheckBox resolvedCheck, JTextArea resolutionTextArea, JTextArea descriptionTextArea,
-			JTextArea notesTextArea)
+			JTextArea notesTextArea, JFrame frame)
 	{
 		// try to connect and execute query
 		try
 		{
+			if (idText.getText().isEmpty())
+			{
+				JOptionPane.showMessageDialog(frame, "Please enter a number for the ticket ID.");
+				return;
+			}
+			
+			try 
+			{
+		    int id = Integer.parseInt(idText.getText());
+			} 
+			catch (NumberFormatException e) 
+			{
+				JOptionPane.showMessageDialog(frame, "Please enter a number for the ticket ID.");
+		    return;
+			}
+			
 			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
 			String user = "StudentS1";
 			String pass = "SuperSecurePassword17";
@@ -41,8 +61,16 @@ public class Queries
 
 			// create the query and execute it
 			stmt = conn.createStatement();
+			
+			ResultSet rs2 = stmt.executeQuery(SQL);
+			if (!rs2.next())
+			{
+					JOptionPane.showMessageDialog(frame, "No ticket with that ID.");
+					return;
+			}
+			
 			rs = stmt.executeQuery(SQL);
-
+			
 			// set the GUI fields based on the fields returned from query
 			while (rs.next())
 			{
@@ -52,8 +80,17 @@ public class Queries
 				summaryText.setText(rs.getString("Summary"));
 				resolveTimeText.setText(rs.getString("ResolutionTime"));
 				minutesSpentText.setText(rs.getString("MinutesSpent"));
-				String resolver = rs.getString(13) + " " + rs.getString(14);
-				resolvedByText.setText(resolver);
+				//String resolver = rs.getString(13) + " " + rs.getString(14);
+				//resolvedByText.setText(resolver);
+				if (rs.getString("ResolvedBy") == null)
+				{
+					resolvedByText.setText("");
+				}
+				else
+				{
+					String resolver = rs.getString(13) + " " + rs.getString(14);
+					resolvedByText.setText(resolver);
+				}
 				priorityText.setText(rs.getString("Priority"));
 				String resolved = rs.getString("Resolved");
 				if (resolved.equals("1"))
@@ -69,6 +106,7 @@ public class Queries
 			}
 			// close the result set
 			rs.close();
+			idText.setEditable(false);
 		}
 		// if not able to execute query, print stack trace
 		catch (Exception e)
@@ -85,26 +123,77 @@ public class Queries
 	public void update(Connection conn, JTextField idText, JTextField customerText, JTextField summaryText,
 			JTextField resolveTimeText, JTextField minutesSpentText, JTextField resolvedByText, JTextField priorityText,
 			JCheckBox resolvedCheck, JTextArea resolutionTextArea, JTextArea descriptionTextArea,
-			JTextArea notesTextArea)
+			JTextArea notesTextArea, JFrame frame)
 	{
 		try {
+						if (idText.isEditable() == true)
+						{
+								JOptionPane.showMessageDialog(frame, "Please search for a ticket in order to edit it.");
+								return;
+						}
+						
             String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
             String user = "StudentS1";
             String pass = "SuperSecurePassword17";
             
             conn = DriverManager.getConnection(connectionUrl, user, pass);
+            String customerID, summary, description, priority, resolveTime, minutesSpent, resolvedBy, isResolved, resolution, notes = null;
             
             String ticketID = idText.getText();
-            String customerID = customerText.getText();
-            String summary = summaryText.getText();
-            String description = descriptionTextArea.getText();
-            String priority = priorityText.getText();
-            String resolveTime = resolveTimeText.getText();
-            String minutesSpent = minutesSpentText.getText();
-            String resolvedBy = resolvedByText.getText();
-            String isResolved  = resolvedCheck.isSelected() ? "1" : "0";
-            String resolution = resolutionTextArea.getText();
-            String notes = notesTextArea.getText();
+            if (customerText.getText().equals(""))
+            {
+            	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a customer.");
+            	return;
+            }
+            else
+            {
+            	customerID = customerText.getText();
+            }
+            
+            if (summaryText.getText().equals(""))
+            {
+            	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a summary.");
+            	return;
+            }
+            else
+            {
+            	summary = summaryText.getText();
+            }
+            
+            if (descriptionTextArea.getText().equals(""))
+            {
+            	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a description.");
+            	return;
+            }
+            else
+            {
+            	description = descriptionTextArea.getText();
+            }
+            
+            if (notesTextArea.getText().equals(""))
+            {
+            	notes = " ";
+            }
+            else
+            {
+            	notes = notesTextArea.getText();
+            }
+            
+            if (priorityText.getText().equals(""))
+            {
+            		JOptionPane.showMessageDialog(frame, "Cannot update if the priority field is not a 1, 2, or 3.");
+            		return;
+            }
+            else if (priorityText.getText().equals("1") || priorityText.getText().equals("2") || priorityText.getText().equals("3"))
+            {
+            		priority = priorityText.getText();
+            }
+            else
+            {
+            		JOptionPane.showMessageDialog(frame, "Cannot update if the priority field is not a 1, 2, or 3.");
+            		return;
+            }
+         
             int id = 0;
             
             String SQL = 
@@ -115,30 +204,87 @@ public class Queries
             PreparedStatement pstmt = conn.prepareStatement(SQL);
             ResultSet rs =  pstmt.executeQuery();
             while(rs.next()){
-                //Retrieve by column name
-                id  = rs.getInt("id");
-            }
-            if (id == 0)
-            {
-            	System.out.println("no such customer");
-            }
-            else
-            {
-            	System.out.println("found customer id: "+ id);
-            }
+              //Retrieve by column name
+              id  = rs.getInt("CustomerID");
+          }
+          if (id == 0)
+          {
+          	JOptionPane.showMessageDialog(frame, "No such customer.");
+          	return;
+          }
+          else
+          {
+          	System.out.println("found customer id: "+ id);
+          }
+          
             
+          DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
+          LocalDateTime now = LocalDateTime.now();
+          resolveTime = dtf.format(now); 
             
+          String SQL2;
             
-            
+        if (resolvedCheck.isSelected())
+        {
+        	if (minutesSpentText.getText().equals(""))
+          {
+          		JOptionPane.showMessageDialog(frame, "The minutes spent field cannot be empty.");
+          		resolvedCheck.setSelected(false);
+          		return;
+          }
+          else 
+          {
+          	try 
+  					{
+  				    int minutesSpentInt = Integer.parseInt(minutesSpentText.getText());
+  					} 
+  					catch (NumberFormatException e) 
+  					{
+  						JOptionPane.showMessageDialog(frame, "Please enter a number for the minutes spent field.");
+  						resolvedCheck.setSelected(false);
+  				    return;
+  					}
+            minutesSpent = minutesSpentText.getText();
+          }
+          
+          if (resolvedByText.getText().equals(""))
+          {
+          	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a resolved by person.");
+          	resolvedCheck.setSelected(false);
+          	return;
+          }
+          else
+          {
+          	resolvedBy = resolvedByText.getText();
+          }      
+          
+          isResolved  = "1";
+          
+          if (resolutionTextArea.getText().equals(""))
+          {
+          	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a resolution.");
+          	return;
+          }
+          else
+          {
+          	resolution = resolutionTextArea.getText();
+          }
           //sql code to create ticket in database
-            String SQL2 = 
+        					 SQL2 = 
             		   "UPDATE AdventureWorksS1.HelpDesk.Ticket SET CustomerID = " + id + "," + "Summary = " + "'" + summary + "'"
             		   + "," + "Description="  +  "'" + description + "'" + "," +  "Resolution=" + "'" + resolution + "'" + ","  + "ResolutionTime =" + "'" +resolveTime +  "'" + "," + "Resolved=" + isResolved + "," + "ResolvedBy=" + "'" +  resolvedBy + "'" + "," + "Priority=" + priority + "," + "MinutesSpent=" + "'" + minutesSpent + "'" + "," + "Notes=" + "'" + notes + "'" + 
             		   "WHERE TicketID = " + ticketID;
-            		   
+        }
+        else
+        {
+			             SQL2 = 
+			       		   "UPDATE AdventureWorksS1.HelpDesk.Ticket SET CustomerID = " + id + "," + "Summary = " + "'" + summary + "'"
+			       		   + "," + "Description="  +  "'" + description + "'" + "," +  "'" + "," + "Priority=" + priority + "," + "Notes=" + "'" + notes + "'" + 
+			       		   "WHERE TicketID = " + ticketID;
+        }
 
      		PreparedStatement pstmt2 = conn.prepareStatement(SQL2);
-     		pstmt2.executeUpdate();
+      	pstmt2.executeUpdate();
 		
 		
 		
@@ -158,16 +304,66 @@ public class Queries
 	public void resolve(Connection conn, JTextField idText, JTextField customerText, JTextField summaryText,
 			JTextField resolveTimeText, JTextField minutesSpentText, JTextField resolvedByText, JTextField priorityText,
 			JCheckBox resolvedCheck, JTextArea resolutionTextArea, JTextArea descriptionTextArea,
-			JTextArea notesTextArea)
+			JTextArea notesTextArea, JFrame frame)
 	{
 		// try to connect and execute query
 		try
 		{
+			if (resolvedCheck.isSelected())
+			{
+			//	JOptionPane.showMessageDialog(frame, "The ticket is already resolved.");
+			}
+			if (minutesSpentText.getText().equals(""))
+			{
+				JOptionPane.showMessageDialog(frame, "Please do not leave the minutes spent empty.");
+				return;
+			}
+			else
+			{
+					try 
+					{
+				    int minutesSpent = Integer.parseInt(minutesSpentText.getText());
+					} 
+					catch (NumberFormatException e) 
+					{
+						JOptionPane.showMessageDialog(frame, "Please enter a number for the minutes spent field.");
+				    return;
+					}
+			}
+			if (resolvedByText.getText().equals(""))
+			{
+				JOptionPane.showMessageDialog(frame, "Please do not leave the resolved by field empty.");
+				return;
+			}
+			else
+			{
+				String resolvedBy = resolvedByText.getText();
+			}
+			if (resolutionTextArea.getText().equals(""))
+			{
+				JOptionPane.showMessageDialog(frame, "Please do not leave the resolution field empty.");
+				return;
+			}
+			else
+			{
+				String resolution = resolutionTextArea.getText();
+			}
+			
+			resolvedCheck.setSelected(true);
+			this.update(conn, idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
+					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
+			
+/*			
 			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
 			String user = "StudentS1";
 			String pass = "SuperSecurePassword17";
 
 			conn = DriverManager.getConnection(connectionUrl, user, pass);
+
+Add to this query to also update:
+    minutes spent using the minutesSpent variable
+    the resolved by field using the resolvedBy variable
+    the resolution using the resolution variables
 
 			// sql code to update resolved field data in database
 			String SQL = "UPDATE AdventureWorksS1.HelpDesk.Ticket " + "  SET Resolved = 1 " + "WHERE TicketID = "
@@ -175,9 +371,9 @@ public class Queries
 
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
 			pstmt.executeUpdate();
-			resolvedCheck.setSelected(true);
+			resolvedCheck.setSelected(true); */
 		}
-		// if not able to execute query, print stack trace
+		// if not able to execute query, print stack trace 
 		catch (Exception e)
 		{
 
@@ -192,7 +388,7 @@ public class Queries
 	 */
 	public void create(Connection conn, JTextField idText, JTextField customerText, JTextField summaryText, 
 	JTextField resolveTimeText, JTextField minutesSpentText, JTextField resolvedByText, JTextField priorityText, 
-	JCheckBox resolvedCheck, JTextArea resolutionTextArea, JTextArea descriptionTextArea, JTextArea notesTextArea) 
+	JCheckBox resolvedCheck, JTextArea resolutionTextArea, JTextArea descriptionTextArea, JTextArea notesTextArea, JFrame frame) 
 	{
 		try {
             String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
@@ -201,11 +397,63 @@ public class Queries
             
             conn = DriverManager.getConnection(connectionUrl, user, pass);
             
-            String ticketID = idText.getText();
-            String customerID = customerText.getText();
-            String summary = summaryText.getText();
-            String description = descriptionTextArea.getText();
-            String priority = priorityText.getText();
+            //String ticketID = idText.getText();
+            String customerID = null;
+            String summary = null;
+            String description = null;
+            String priority = null;
+            
+            if (!idText.getText().equals(""))
+            {
+            	JOptionPane.showMessageDialog(frame, "Please do not manually enter a ticket number. It will be added automatically.");
+          		return;
+            }
+            
+            if (customerText.getText().equals(""))
+            {
+            		JOptionPane.showMessageDialog(frame, "Please fill out the customer field.");
+            		return;
+            }
+            else
+            {
+            		customerID = customerText.getText();
+            }
+            
+            if (summaryText.getText().equals(""))
+            {
+            		JOptionPane.showMessageDialog(frame, "Please fill out the summary field.");
+            		return;
+            }
+            else
+            {
+            		summary = summaryText.getText();
+            }
+            
+            if (descriptionTextArea.getText().equals(""))
+            {
+            		JOptionPane.showMessageDialog(frame, "Please fill out the description field.");
+            		return;
+            }
+            else
+            {
+            		description = descriptionTextArea.getText();
+            }
+            
+            if (priorityText.getText().equals(""))
+            {
+            		JOptionPane.showMessageDialog(frame, "Please fill out the priority field with a 1, 2, or 3.");
+            		return;
+            }
+            else if (priorityText.getText().equals("1") || priorityText.getText().equals("2") || priorityText.getText().equals("3"))
+            {
+            		priority = priorityText.getText();
+            }
+            else
+            {
+            		JOptionPane.showMessageDialog(frame, "Please fill out the priority field with a 1, 2, or 3.");
+            		return;
+            }
+            
             int id = 0;
             
             String SQL = 
@@ -217,11 +465,12 @@ public class Queries
             ResultSet rs =  pstmt.executeQuery();
             while(rs.next()){
                 //Retrieve by column name
-                id  = rs.getInt("id");
+                id  = rs.getInt("CustomerID");
             }
             if (id == 0)
             {
-            	System.out.println("no such customer");
+            	JOptionPane.showMessageDialog(frame, "No such customer.");
+            	return;
             }
             else
             {
@@ -231,20 +480,19 @@ public class Queries
             
           //sql code to create ticket in database
      		String SQL2 = 
-            		   "INSERT INTO AdventureWorksS1.HelpDesk.Ticket (CustomerID, Summary,  Description, Priority)" + 
-            		   "  VALUES (" + id + "," + "'" + summary + "'" + "," +  "'"  + description + "'"
-            		   + "," + priority + ")";
+            		   "INSERT INTO AdventureWorksS1.HelpDesk.Ticket (CustomerID, Summary,  Description, Priority, ResolvedBy)" + 
+            		   "  VALUES (" + "'" + id + "'" + "," + "'" + summary + "'" + "," +  "'"  + description + "'"
+            		   + "," + "'" + priority + "'" + "," + "'" + "4" + "'" + ")";
             		   
 
      		PreparedStatement pstmt2 = conn.prepareStatement(SQL2);
      		pstmt2.executeUpdate();
 		
+     		JOptionPane.showMessageDialog(frame, "Ticket has been created");
 		
-		
-		System.out.println("Create worked");
 	}catch (Exception e)
 		{
-
+		JOptionPane.showMessageDialog(frame, "Unknown error.");
 		e.printStackTrace();
 	}//end create
 	}
