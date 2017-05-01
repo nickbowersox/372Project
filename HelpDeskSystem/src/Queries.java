@@ -357,18 +357,14 @@ public class Queries
 			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
 			String user = "StudentS1";
 			String pass = "SuperSecurePassword17";
-
 			conn = DriverManager.getConnection(connectionUrl, user, pass);
-
 Add to this query to also update:
     minutes spent using the minutesSpent variable
     the resolved by field using the resolvedBy variable
     the resolution using the resolution variables
-
 			// sql code to update resolved field data in database
 			String SQL = "UPDATE AdventureWorksS1.HelpDesk.Ticket " + "  SET Resolved = 1 " + "WHERE TicketID = "
 					+ idText.getText();
-
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
 			pstmt.executeUpdate();
 			resolvedCheck.setSelected(true); */
