@@ -210,6 +210,7 @@ public class Queries
           if (id == 0)
           {
           	JOptionPane.showMessageDialog(frame, "No such customer.");
+          	resolvedCheck.setSelected(false);
           	return;
           }
           else
@@ -247,16 +248,26 @@ public class Queries
             minutesSpent = minutesSpentText.getText();
           }
           
-          if (resolvedByText.getText().equals(""))
+        	if (resolvedByText.getText().equals(""))
           {
-          	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a resolved by person.");
-          	resolvedCheck.setSelected(false);
-          	return;
+          		JOptionPane.showMessageDialog(frame, "The resolved by field cannot be empty.");
+          		resolvedCheck.setSelected(false);
+          		return;
           }
-          else
+          else 
           {
-          	resolvedBy = resolvedByText.getText();
-          }      
+          	try 
+  					{
+  				    int resolvedBytInt = Integer.parseInt(resolvedByText.getText());
+  					} 
+  					catch (NumberFormatException e) 
+  					{
+  						JOptionPane.showMessageDialog(frame, "Please enter an employee ID number for the resolved by field.");
+  						resolvedCheck.setSelected(false);
+  				    return;
+  					}
+            resolvedBy = resolvedByText.getText();
+          }   
           
           isResolved  = "1";
           
