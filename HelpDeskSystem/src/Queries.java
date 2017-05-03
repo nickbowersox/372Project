@@ -123,9 +123,10 @@ public class Queries
 	public void update(Connection conn, JTextField idText, JTextField customerText, JTextField summaryText,
 			JTextField resolveTimeText, JTextField minutesSpentText, JTextField resolvedByText, JTextField priorityText,
 			JCheckBox resolvedCheck, JTextArea resolutionTextArea, JTextArea descriptionTextArea,
-			JTextArea notesTextArea, JFrame frame)
+			JTextArea notesTextArea, JFrame frame, boolean resolving)
 	{
 		try {
+			
 						if (idText.isEditable() == true)
 						{
 								JOptionPane.showMessageDialog(frame, "Please search for a ticket in order to edit it.");
@@ -143,6 +144,7 @@ public class Queries
             if (customerText.getText().equals(""))
             {
             	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a customer.");
+            	if (resolving == true) resolvedCheck.setSelected(false);
             	return;
             }
             else
@@ -153,6 +155,7 @@ public class Queries
             if (summaryText.getText().equals(""))
             {
             	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a summary.");
+            	if (resolving == true) resolvedCheck.setSelected(false);
             	return;
             }
             else
@@ -163,6 +166,7 @@ public class Queries
             if (descriptionTextArea.getText().equals(""))
             {
             	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a description.");
+            	if (resolving == true) resolvedCheck.setSelected(false);
             	return;
             }
             else
@@ -182,6 +186,7 @@ public class Queries
             if (priorityText.getText().equals(""))
             {
             		JOptionPane.showMessageDialog(frame, "Cannot update if the priority field is not a 1, 2, or 3.");
+            		if (resolving == true) resolvedCheck.setSelected(false);
             		return;
             }
             else if (priorityText.getText().equals("1") || priorityText.getText().equals("2") || priorityText.getText().equals("3"))
@@ -191,6 +196,7 @@ public class Queries
             else
             {
             		JOptionPane.showMessageDialog(frame, "Cannot update if the priority field is not a 1, 2, or 3.");
+            		if (resolving == true) resolvedCheck.setSelected(false);
             		return;
             }
          
@@ -210,7 +216,7 @@ public class Queries
           if (id == 0)
           {
           	JOptionPane.showMessageDialog(frame, "No such customer.");
-          	resolvedCheck.setSelected(false);
+          	if (resolving == true) resolvedCheck.setSelected(false);
           	return;
           }
           else
@@ -230,7 +236,7 @@ public class Queries
         	if (minutesSpentText.getText().equals(""))
           {
           		JOptionPane.showMessageDialog(frame, "The minutes spent field cannot be empty.");
-          		resolvedCheck.setSelected(false);
+          		if (resolving == true) resolvedCheck.setSelected(false);
           		return;
           }
           else 
@@ -238,11 +244,16 @@ public class Queries
           	try 
   					{
   				    int minutesSpentInt = Integer.parseInt(minutesSpentText.getText());
+  				    if (minutesSpentInt > 99999999)
+  				    {
+  				    	JOptionPane.showMessageDialog(frame, "Please enter a number less that 99,999,999.");
+  				    	return;
+  				    }//end if
   					} 
   					catch (NumberFormatException e) 
   					{
   						JOptionPane.showMessageDialog(frame, "Please enter a number for the minutes spent field.");
-  						resolvedCheck.setSelected(false);
+  						if (resolving == true) resolvedCheck.setSelected(false);
   				    return;
   					}
             minutesSpent = minutesSpentText.getText();
@@ -251,7 +262,7 @@ public class Queries
         	if (resolvedByText.getText().equals(""))
           {
           		JOptionPane.showMessageDialog(frame, "The resolved by field cannot be empty.");
-          		resolvedCheck.setSelected(false);
+          		if (resolving == true) resolvedCheck.setSelected(false);
           		return;
           }
           else 
@@ -263,7 +274,7 @@ public class Queries
   					catch (NumberFormatException e) 
   					{
   						JOptionPane.showMessageDialog(frame, "Please enter an employee ID number for the resolved by field.");
-  						resolvedCheck.setSelected(false);
+  						if (resolving == true) resolvedCheck.setSelected(false);
   				    return;
   					}
             resolvedBy = resolvedByText.getText();
@@ -274,6 +285,7 @@ public class Queries
           if (resolutionTextArea.getText().equals(""))
           {
           	JOptionPane.showMessageDialog(frame, "Cannot update ticket without a resolution.");
+          	if (resolving == true) resolvedCheck.setSelected(false);
           	return;
           }
           else
@@ -290,19 +302,28 @@ public class Queries
         {
 			             SQL2 = 
 			       		   "UPDATE AdventureWorksS1.HelpDesk.Ticket SET CustomerID = " + id + "," + "Summary = " + "'" + summary + "'"
-			       		   + "," + "Description="  +  "'" + description + "'" + "," +  "'" + "," + "Priority=" + priority + "," + "Notes=" + "'" + notes + "'" + 
+			       		   + "," + "Description="  +  "'" + description + "'" + "," + "Priority=" + priority + "," + "Notes=" + "'" + notes + "'" + 
 			       		   "WHERE TicketID = " + ticketID;
         }
 
      		PreparedStatement pstmt2 = conn.prepareStatement(SQL2);
       	pstmt2.executeUpdate();
+      	
+      	if (resolvedCheck.isSelected())
+      	{
+      		JOptionPane.showMessageDialog(frame, "All of the fields were saved.");
+      	}
+      	else
+      	{
+      		JOptionPane.showMessageDialog(frame, "Only the description, summary, customer, and notes were updated. Resolve the ticket first to update the other fields.");
+      	}
 		
 		
 		
 		System.out.println("Update worked");
 	}catch (Exception e)
 		{
-
+			JOptionPane.showMessageDialog(frame, "Unknown error");
 		e.printStackTrace();
 	}//end create
 	}// end update
@@ -322,7 +343,8 @@ public class Queries
 		{
 			if (resolvedCheck.isSelected())
 			{
-			//	JOptionPane.showMessageDialog(frame, "The ticket is already resolved.");
+				JOptionPane.showMessageDialog(frame, "The ticket is already resolved.");
+				return;
 			}
 			if (minutesSpentText.getText().equals(""))
 			{
@@ -346,23 +368,15 @@ public class Queries
 				JOptionPane.showMessageDialog(frame, "Please do not leave the resolved by field empty.");
 				return;
 			}
-			else
-			{
-				String resolvedBy = resolvedByText.getText();
-			}
 			if (resolutionTextArea.getText().equals(""))
 			{
 				JOptionPane.showMessageDialog(frame, "Please do not leave the resolution field empty.");
 				return;
 			}
-			else
-			{
-				String resolution = resolutionTextArea.getText();
-			}
 			
 			resolvedCheck.setSelected(true);
 			this.update(conn, idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
-					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
+					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame, true);
 			
 /*			
 			String connectionUrl = "jdbc:sqlserver://ICSsql-1;databaseName=AdventureWorksS1;";
@@ -495,7 +509,37 @@ Add to this query to also update:
      		PreparedStatement pstmt2 = conn.prepareStatement(SQL2);
      		pstmt2.executeUpdate();
 		
+     		//
+     		
+     		Statement stmt = null;
+  			ResultSet rs3 = null;
+
+
+  			// sql code to retrieve data from database
+  			String SQL3 = "select TicketID from AdventureWorksS1.HelpDesk.Ticket";
+
+  			// create the query and execute it
+  			stmt = conn.createStatement();
+  			rs3 = stmt.executeQuery(SQL3);
+  			String ticketId = "";
+  			
+  			// set the GUI fields based on the fields returned from query
+  			while (rs3.next())
+  			{
+  				ticketId = rs3.getString("TicketID");
+  			}
+  		// close the result set
+  			rs3.close();
+     		
+     		//
+     		
      		JOptionPane.showMessageDialog(frame, "Ticket has been created");
+     		resolutionTextArea.setEditable(true);
+     			resolutionTextArea.setText("");
+     		resolvedByText.setEditable(true);
+     		minutesSpentText.setEditable(true);
+     		idText.setEditable(false);
+     			idText.setText(ticketId);
 		
 	}catch (Exception e)
 		{

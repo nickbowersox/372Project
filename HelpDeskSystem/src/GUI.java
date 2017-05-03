@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -40,7 +41,7 @@ public class GUI
 		
 		//create buttons
 		JButton searchButton = new JButton("Search By Ticket ID");
-		JButton updateButton = new JButton("Save Changes");
+		JButton updateButton = new JButton("Update ticket");
 		JButton clearButton = new JButton("Clear");
 		JButton createButton = new JButton("Create new Ticket");
 		JButton resolveButton = new JButton("Resolve Ticket");
@@ -53,13 +54,17 @@ public class GUI
 		JTextField resolveTimeText = new JTextField(10);
 			resolveTimeText.setEditable(false);
 		JTextField minutesSpentText = new JTextField(5);
+			minutesSpentText.setEditable(false);
 		JTextField resolvedByText = new JTextField(15);
+			resolvedByText.setEditable(false);
 		JTextField priorityText = new JTextField(1);
 		
 		//create scrolling text areas
 		final JTextArea descriptionTextArea = new JTextArea(10,25);
 		JScrollPane descriptionScroll = new JScrollPane(descriptionTextArea);
 		final JTextArea resolutionTextArea = new JTextArea(10,25);
+			resolutionTextArea.setEditable(false);
+			resolutionTextArea.setText("Create a ticket first in order to resolve it!");
 		JScrollPane resolutionScroll = new JScrollPane(resolutionTextArea);
 		final JTextArea notesTextArea = new JTextArea(10,25);
 		JScrollPane notesScroll = new JScrollPane(notesTextArea);		
@@ -125,6 +130,9 @@ public class GUI
     			queries.search(conn.getConnections(), idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
     					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
     			conn.closeConnection();
+    			resolutionTextArea.setEditable(true);
+    			resolvedByText.setEditable(true);
+    			minutesSpentText.setEditable(true);
     	   }
     }
 		
@@ -138,7 +146,7 @@ public class GUI
     	public void actionPerformed(ActionEvent event)
     	   {
     			queries.update(conn.getConnections(), idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
-    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
+    					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame, false);
     			conn.closeConnection();
     	   }
     }
@@ -152,6 +160,11 @@ public class GUI
     	
     	public void actionPerformed(ActionEvent event)
     	   {
+    			if (minutesSpentText.isEditable() == false)
+    			{
+    				JOptionPane.showMessageDialog(frame, "Please save the ticket before resolving it.");
+    				return;
+    			}
     			queries.resolve(conn.getConnections(), idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
     					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea, frame);
     			conn.closeConnection();
@@ -183,6 +196,10 @@ public class GUI
 	  	public void actionPerformed(ActionEvent event)
 	  	{
 	  			idText.setEditable(true);
+	  			resolutionTextArea.setEditable(false);
+	  				resolutionTextArea.setText("Create a ticket first in order to resolve it!");	  			
+	  			resolvedByText.setEditable(false);
+	  			minutesSpentText.setEditable(false);
 	  			clear(idText, customerText, summaryText, resolveTimeText, minutesSpentText, 
     					resolvedByText, priorityText, resolvedCheck, resolutionTextArea, descriptionTextArea, notesTextArea);
 	  	}
